@@ -213,27 +213,27 @@ export default class Http {
 		return rt
 	}
 	
-	async searchAll (params, attr, inputSearch, type, page, pageSize, sort) {
+	async searchAll (params, attr, inputSearch, page, pageSize, sort, type) {
 		let entities = await this.find(page, pageSize, sort)
 		let count = await this.findCount()
 		return { count, entities }
 	}
 	
-	async searchAttr (caseInsensitive, params, attr, inputSearch, type, page, pageSize, sort) {
+	async searchAttr (caseInsensitive, params, attr, inputSearch, page, pageSize, sort, type) {
 		let skip = (page - 1) * pageSize
 		let args = {}
 
 		for (let p of params) {
 			if (p.descriptor.array)
-				this[searchArrayAttr](p, caseInsensitive, args, attr, type, page, pageSize, sort)
+				this[searchArrayAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type)
 			else if (type === String)
-				this[searchStringAttr](p, caseInsensitive, args, attr, type, page, pageSize, sort)
+				this[searchStringAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type)
 			else if (type === Number)
-				this[searchNumberAttr](p, caseInsensitive, args, attr, type, page, pageSize, sort)
+				this[searchNumberAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type)
 			else if (type === Date)
-				this[searchDateAttr](p, caseInsensitive, args, attr, type, page, pageSize, sort)
+				this[searchDateAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type)
 			else if (type === Boolean)
-				this[searchBooleanAttr](p, caseInsensitive, args, attr, type, page, pageSize, sort)
+				this[searchBooleanAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type)
 		}
 
 		let entities = await this.requestGet({
@@ -255,7 +255,7 @@ export default class Http {
 		return { count, entities }
 	}
 
-	[searchArrayAttr] (p, caseInsensitive, args, attr, type, page, pageSize, sort) {
+	[searchArrayAttr] (p, caseInsensitive, args, attr, page, pageSize, sort, type) {
 		let search
 
 		if (p.descriptor.searchSep) {
@@ -305,7 +305,7 @@ export default class Http {
 			throw new InvalidOperatorForTypeArrayError(p.operator)
 	}
 
-	[searchStringAttr] (p, caseInsensitive, args, attr, type, page, pageSize, sort) {
+	[searchStringAttr] (p, caseInsensitive, args, attr, page, pageSize, sort, type) {
 		if (p.operator === 'contains')
 			p.value = `/${scape(p.value)}/`
 		else if (p.operator === 'equals')
@@ -323,7 +323,7 @@ export default class Http {
 		args[`${attr}__regex`] = p.value
 	}
 
-	[searchNumberAttr] (p, caseInsensitive, args, attr, type, page, pageSize, sort) {
+	[searchNumberAttr] (p, caseInsensitive, args, attr, page, pageSize, sort, type) {
 		let op
 
 		if (p.operator === 'equals')
@@ -342,7 +342,7 @@ export default class Http {
 		args[`${attr}__${op}`] = p.value
 	}
 
-	[searchDateAttr] (p, caseInsensitive, args, attr, type, page, pageSize, sort) {
+	[searchDateAttr] (p, caseInsensitive, args, attr, page, pageSize, sort, type) {
 		let op
 
 		if (p.operator === 'equals')
@@ -359,7 +359,7 @@ export default class Http {
 		args[`${attr}__${op}`] = p.value.toISOString()
 	}
 
-	[searchBooleanAttr] (p, caseInsensitive, args, attr, type, page, pageSize, sort) {
+	[searchBooleanAttr] (p, caseInsensitive, args, attr, page, pageSize, sort, type) {
 		if (p.value === true)
 			p.value = 1
 		else if (p.value === false)
