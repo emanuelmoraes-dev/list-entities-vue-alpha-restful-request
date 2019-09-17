@@ -1,0 +1,30 @@
+{
+  "name": "request-list-entities-vue-alpha-restful",
+  "version": "1.0.0",
+  "description": "Simple package responsible for providing a class that assists in the implementation of the object that contains all the necessary methods for the \"list-entities-vue\" API executes all search requests required for a backend made using the default route of \"alpha-restful\"",
+  "readmeFilename": "README.md",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emanuelmoraes-dev/request-list-entities-vue-alpha-restful.git"
+  },
+  "keywords": [
+    "list-entities-vue",
+    "alpha-restful",
+    "request"
+  ],
+  "author": {
+    "name": "Emanuel Moraes",
+    "email": "emanuelmoraes297@gmail.com"
+  },
+  "license": "MIT",
+  "private": false,
+  "bugs": {
+    "url": "https://github.com/emanuelmoraes-dev/request-list-entities-vue-alpha-restful/issues"
+  },
+  "homepage": "https://github.com/emanuelmoraes-dev/request-list-entities-vue-alpha-restful#readme",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "datetime-utility": "^2.1.1"
+  }
+}
