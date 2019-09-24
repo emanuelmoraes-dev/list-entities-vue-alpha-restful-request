@@ -215,13 +215,13 @@ export default class Http {
 		return rt
 	}
 	
-	async searchAll (params, attr, inputSearch, page, pageSize, sort, type) {
+	async searchAll (inputSearch, params, attr, page, pageSize, sort, type) {
 		let entities = await this.find(page, pageSize, sort)
 		let count = await this.findCount()
 		return { count, entities }
 	}
 	
-	async searchAttr (caseInsensitive, params, attr, inputSearch, page, pageSize, sort, type) {
+	async searchAttr (caseInsensitive, inputSearch, params, attr, page, pageSize, sort, type) {
 		let skip = (page - 1) * pageSize
 		let args = {}
 
