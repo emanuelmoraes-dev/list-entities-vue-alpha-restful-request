@@ -776,7 +776,7 @@ function () {
     value: function () {
       var _searchAll = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee14(params, attr, inputSearch, page, pageSize, sort, type) {
+      regeneratorRuntime.mark(function _callee14(inputSearch, params, attr, page, pageSize, sort, type) {
         var entities, count;
         return regeneratorRuntime.wrap(function _callee14$(_context14) {
           while (1) {
@@ -816,7 +816,7 @@ function () {
     value: function () {
       var _searchAttr = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee15(caseInsensitive, params, attr, inputSearch, page, pageSize, sort, type) {
+      regeneratorRuntime.mark(function _callee15(caseInsensitive, inputSearch, params, attr, page, pageSize, sort, type) {
         var skip, args, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, p, entities, _ref9, count;
 
         return regeneratorRuntime.wrap(function _callee15$(_context15) {
