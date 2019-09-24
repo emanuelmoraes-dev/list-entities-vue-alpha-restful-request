@@ -1,3 +1,5 @@
+import 'es6-promise/auto'
+
 import axios from 'axios'
 import { scape } from 'datetime-utility'
 
