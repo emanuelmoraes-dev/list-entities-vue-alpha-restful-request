@@ -762,7 +762,7 @@ function () {
   }, {
     key: "parseRequestListEntities",
     value: function parseRequestListEntities(caseInsensitive) {
-      var searchAll = this.searchAll.bind(this, caseInsensitive);
+      var searchAll = this.searchAll.bind(this);
       var searchAttr = this.searchAttr.bind(this, caseInsensitive);
       var rt = {
         searchAll: searchAll,
@@ -776,36 +776,28 @@ function () {
     value: function () {
       var _searchAll = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee14(caseInsensitive, inputSearch, params, attr, page, pageSize, sort, type) {
+      regeneratorRuntime.mark(function _callee14(page, pageSize, sort) {
         var entities, count;
         return regeneratorRuntime.wrap(function _callee14$(_context14) {
           while (1) {
             switch (_context14.prev = _context14.next) {
               case 0:
-                if (!(params && params.length)) {
-                  _context14.next = 2;
-                  break;
-                }
-
-                return _context14.abrupt("return", this.searchAttr(caseInsensitive, inputSearch, params, attr, page, pageSize, sort, type));
-
-              case 2:
-                _context14.next = 4;
+                _context14.next = 2;
                 return this.find(page, pageSize, sort);
 
-              case 4:
+              case 2:
                 entities = _context14.sent;
-                _context14.next = 7;
+                _context14.next = 5;
                 return this.findCount();
 
-              case 7:
+              case 5:
                 count = _context14.sent;
                 return _context14.abrupt("return", {
                   count: count,
                   entities: entities
                 });
 
-              case 9:
+              case 7:
               case "end":
                 return _context14.stop();
             }
@@ -813,7 +805,7 @@ function () {
         }, _callee14, this);
       }));
 
-      function searchAll(_x16, _x17, _x18, _x19, _x20, _x21, _x22, _x23) {
+      function searchAll(_x16, _x17, _x18) {
         return _searchAll.apply(this, arguments);
       }
 
@@ -824,7 +816,7 @@ function () {
     value: function () {
       var _searchAttr = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee15(caseInsensitive, inputSearch, params, attr, page, pageSize, sort, type) {
+      regeneratorRuntime.mark(function _callee15(caseInsensitive, page, pageSize, sort, inputSearch, params) {
         var skip, args, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, p, entities, _ref9, count;
 
         return regeneratorRuntime.wrap(function _callee15$(_context15) {
@@ -840,7 +832,7 @@ function () {
 
                 for (_iterator = params[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                   p = _step.value;
-                  if (p.descriptor.array) this[searchArrayAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type);else if (type === String) this[searchStringAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type);else if (type === Number) this[searchNumberAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type);else if (type === Date) this[searchDateAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type);else if (type === Boolean) this[searchBooleanAttr](p, caseInsensitive, args, attr, page, pageSize, sort, type);
+                  if (p.descriptor.array) this[searchArrayAttr](p, args, caseInsensitive);else if (type === String) this[searchStringAttr](p, args, caseInsensitive);else if (type === Number) this[searchNumberAttr](p, args);else if (type === Date) this[searchDateAttr](p, args);else if (type === Boolean) this[searchBooleanAttr](p, args);
                 }
 
                 _context15.next = 13;
@@ -911,7 +903,7 @@ function () {
         }, _callee15, this, [[5, 9, 13, 21], [14,, 16, 20]]);
       }));
 
-      function searchAttr(_x24, _x25, _x26, _x27, _x28, _x29, _x30, _x31) {
+      function searchAttr(_x19, _x20, _x21, _x22, _x23, _x24) {
         return _searchAttr.apply(this, arguments);
       }
 
@@ -919,7 +911,7 @@ function () {
     }()
   }, {
     key: searchArrayAttr,
-    value: function value(p, caseInsensitive, args, attr, page, pageSize, sort, type) {
+    value: function value(p, args, caseInsensitive) {
       var search;
 
       if (p.descriptor.searchSep) {
@@ -936,28 +928,28 @@ function () {
     }
   }, {
     key: searchStringAttr,
-    value: function value(p, caseInsensitive, args, attr, page, pageSize, sort, type) {
+    value: function value(p, args, caseInsensitive) {
       if (p.operator === 'contains') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'equals') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "$/");else if (p.operator === 'startsWith') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'endsWith') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "$/");else throw new InvalidOperatorForTypeStringError(p.operator);
       if (caseInsensitive) p.value += 'i';
       args["".concat(p.attr || attr, "__regex")] = p.value;
     }
   }, {
     key: searchNumberAttr,
-    value: function value(p, caseInsensitive, args, attr, page, pageSize, sort, type) {
+    value: function value(p, args) {
       var op;
       if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';else throw new InvalidOperatorForTypeNumberError(p.operator);
       args["".concat(p.attr || attr, "__").concat(op)] = p.value;
     }
   }, {
     key: searchDateAttr,
-    value: function value(p, caseInsensitive, args, attr, page, pageSize, sort, type) {
+    value: function value(p, args) {
       var op;
       if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';
       args["".concat(p.attr || attr, "__").concat(op)] = p.value.toISOString();
     }
   }, {
     key: searchBooleanAttr,
-    value: function value(p, caseInsensitive, args, attr, page, pageSize, sort, type) {
+    value: function value(p, args) {
       if (p.value === true) p.value = 1;else if (p.value === false) p.value = 0;
       args["".concat(p.attr || attr, "__$eq")] = p.value;
     }
