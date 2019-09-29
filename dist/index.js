@@ -762,7 +762,7 @@ function () {
   }, {
     key: "parseRequestListEntities",
     value: function parseRequestListEntities(caseInsensitive) {
-      var searchAll = this.searchAll.bind(this);
+      var searchAll = this.searchAll.bind(this, caseInsensitive);
       var searchAttr = this.searchAttr.bind(this, caseInsensitive);
       var rt = {
         searchAll: searchAll,

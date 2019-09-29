@@ -201,7 +201,7 @@ export default class Http {
 	}
 
 	parseRequestListEntities (caseInsensitive) {
-		const searchAll = this.searchAll.bind(this)
+		const searchAll = this.searchAll.bind(this, caseInsensitive)
 		const searchAttr = this.searchAttr.bind(this, caseInsensitive)
 
 		let rt = {
