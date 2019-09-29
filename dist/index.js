@@ -776,28 +776,36 @@ function () {
     value: function () {
       var _searchAll = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee14(inputSearch, params, attr, page, pageSize, sort, type) {
+      regeneratorRuntime.mark(function _callee14(caseInsensitive, inputSearch, params, attr, page, pageSize, sort, type) {
         var entities, count;
         return regeneratorRuntime.wrap(function _callee14$(_context14) {
           while (1) {
             switch (_context14.prev = _context14.next) {
               case 0:
-                _context14.next = 2;
-                return this.find(page, pageSize, sort);
+                if (!(params && params.length)) {
+                  _context14.next = 2;
+                  break;
+                }
+
+                return _context14.abrupt("return", this.searchAttr(caseInsensitive, inputSearch, params, attr, page, pageSize, sort, type));
 
               case 2:
+                _context14.next = 4;
+                return this.find(page, pageSize, sort);
+
+              case 4:
                 entities = _context14.sent;
-                _context14.next = 5;
+                _context14.next = 7;
                 return this.findCount();
 
-              case 5:
+              case 7:
                 count = _context14.sent;
                 return _context14.abrupt("return", {
                   count: count,
                   entities: entities
                 });
 
-              case 7:
+              case 9:
               case "end":
                 return _context14.stop();
             }
@@ -805,7 +813,7 @@ function () {
         }, _callee14, this);
       }));
 
-      function searchAll(_x16, _x17, _x18, _x19, _x20, _x21, _x22) {
+      function searchAll(_x16, _x17, _x18, _x19, _x20, _x21, _x22, _x23) {
         return _searchAll.apply(this, arguments);
       }
 
@@ -903,7 +911,7 @@ function () {
         }, _callee15, this, [[5, 9, 13, 21], [14,, 16, 20]]);
       }));
 
-      function searchAttr(_x23, _x24, _x25, _x26, _x27, _x28, _x29, _x30) {
+      function searchAttr(_x24, _x25, _x26, _x27, _x28, _x29, _x30, _x31) {
         return _searchAttr.apply(this, arguments);
       }
 
@@ -919,39 +927,39 @@ function () {
         search = search.map(_datetimeUtility.scape).join('|');
         if (p.operator === 'contains') search = "/".concat(search, "/");else if (p.operator === 'equals') search = "/^".concat(search, "$/");else if (p.operator === 'startsWith') search = "/^".concat(search, "/");else if (p.operator === 'endsWith') search = "/".concat(search, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
         if (caseInsensitive) search += 'i';
-        args["".concat(attr, "__regex")] = search;
+        args["".concat(p.attr || attr, "__regex")] = search;
         return;
       }
 
       regex = (0, _datetimeUtility.scape)(p.value);
-      if (p.operator === 'equals') args["".concat(attr, "__eq")] = p.value;else if (p.operator === 'greaterThan') args["".concat(attr, "__$gt")] = p.value;else if (p.operator === 'lessThan') args["".concat(attr, "__$lt")] = p.value;else if (p.operator === 'greaterOrEqualThan') args["".concat(attr, "__$gte")] = p.value;else if (p.operator === 'lessOrEqualThan') args["".concat(attr, "__$lte")] = p.value;else if (p.operator === 'contains') args["".concat(attr, "__regex")] = "/".concat(regex, "/");else if (p.operator === 'equals') args["".concat(attr, "__regex")] = "/^".concat(regex, "$/");else if (p.operator === 'startsWith') args["".concat(attr, "__regex")] = "/^".concat(regex, "/");else if (p.operator === 'endsWith') args["".concat(attr, "__regex")] = "/".concat(regex, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
+      if (p.operator === 'equals') args["".concat(p.attr || attr, "__eq")] = p.value;else if (p.operator === 'greaterThan') args["".concat(p.attr || attr, "__$gt")] = p.value;else if (p.operator === 'lessThan') args["".concat(p.attr || attr, "__$lt")] = p.value;else if (p.operator === 'greaterOrEqualThan') args["".concat(p.attr || attr, "__$gte")] = p.value;else if (p.operator === 'lessOrEqualThan') args["".concat(p.attr || attr, "__$lte")] = p.value;else if (p.operator === 'contains') args["".concat(p.attr || attr, "__regex")] = "/".concat(regex, "/");else if (p.operator === 'equals') args["".concat(p.attr || attr, "__regex")] = "/^".concat(regex, "$/");else if (p.operator === 'startsWith') args["".concat(p.attr || attr, "__regex")] = "/^".concat(regex, "/");else if (p.operator === 'endsWith') args["".concat(p.attr || attr, "__regex")] = "/".concat(regex, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
     }
   }, {
     key: searchStringAttr,
     value: function value(p, caseInsensitive, args, attr, page, pageSize, sort, type) {
       if (p.operator === 'contains') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'equals') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "$/");else if (p.operator === 'startsWith') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'endsWith') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "$/");else throw new InvalidOperatorForTypeStringError(p.operator);
       if (caseInsensitive) p.value += 'i';
-      args["".concat(attr, "__regex")] = p.value;
+      args["".concat(p.attr || attr, "__regex")] = p.value;
     }
   }, {
     key: searchNumberAttr,
     value: function value(p, caseInsensitive, args, attr, page, pageSize, sort, type) {
       var op;
       if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';else throw new InvalidOperatorForTypeNumberError(p.operator);
-      args["".concat(attr, "__").concat(op)] = p.value;
+      args["".concat(p.attr || attr, "__").concat(op)] = p.value;
     }
   }, {
     key: searchDateAttr,
     value: function value(p, caseInsensitive, args, attr, page, pageSize, sort, type) {
       var op;
       if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';
-      args["".concat(attr, "__").concat(op)] = p.value.toISOString();
+      args["".concat(p.attr || attr, "__").concat(op)] = p.value.toISOString();
     }
   }, {
     key: searchBooleanAttr,
     value: function value(p, caseInsensitive, args, attr, page, pageSize, sort, type) {
       if (p.value === true) p.value = 1;else if (p.value === false) p.value = 0;
-      args["".concat(attr, "__$eq")] = p.value;
+      args["".concat(p.attr || attr, "__$eq")] = p.value;
     }
   }, {
     key: "__headersBase",

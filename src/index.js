@@ -215,9 +215,13 @@ export default class Http {
 		return rt
 	}
 	
-	async searchAll (inputSearch, params, attr, page, pageSize, sort, type) {
+	async searchAll (caseInsensitive, inputSearch, params, attr, page, pageSize, sort, type) {
+		if (params && params.length)
+			return this.searchAttr(caseInsensitive, inputSearch, params, attr, page, pageSize, sort, type)
+
 		let entities = await this.find(page, pageSize, sort)
 		let count = await this.findCount()
+
 		return { count, entities }
 	}
 	
@@ -278,7 +282,7 @@ export default class Http {
 			if (caseInsensitive)
 				search += 'i'
 
-			args[`${attr}__regex`] = search
+			args[`${p.attr || attr}__regex`] = search
 
 			return
 		}
@@ -286,23 +290,23 @@ export default class Http {
 		regex = scape(p.value)
 
 		if (p.operator === 'equals')
-			args[`${attr}__eq`] = p.value
+			args[`${p.attr || attr}__eq`] = p.value
 		else if (p.operator === 'greaterThan')
-			args[`${attr}__$gt`] = p.value
+			args[`${p.attr || attr}__$gt`] = p.value
 		else if (p.operator === 'lessThan')
-			args[`${attr}__$lt`] = p.value
+			args[`${p.attr || attr}__$lt`] = p.value
 		else if (p.operator === 'greaterOrEqualThan')
-			args[`${attr}__$gte`] = p.value
+			args[`${p.attr || attr}__$gte`] = p.value
 		else if (p.operator === 'lessOrEqualThan')
-			args[`${attr}__$lte`] = p.value
+			args[`${p.attr || attr}__$lte`] = p.value
 		else if (p.operator === 'contains')
-			args[`${attr}__regex`] = `/${regex}/`
+			args[`${p.attr || attr}__regex`] = `/${regex}/`
 		else if (p.operator === 'equals')
-			args[`${attr}__regex`] = `/^${regex}$/`
+			args[`${p.attr || attr}__regex`] = `/^${regex}$/`
 		else if (p.operator === 'startsWith')
-			args[`${attr}__regex`] = `/^${regex}/`
+			args[`${p.attr || attr}__regex`] = `/^${regex}/`
 		else if (p.operator === 'endsWith')
-			args[`${attr}__regex`] = `/${regex}$/`
+			args[`${p.attr || attr}__regex`] = `/${regex}$/`
 		else
 			throw new InvalidOperatorForTypeArrayError(p.operator)
 	}
@@ -322,7 +326,7 @@ export default class Http {
 		if (caseInsensitive)
 			p.value += 'i'
 
-		args[`${attr}__regex`] = p.value
+		args[`${p.attr || attr}__regex`] = p.value
 	}
 
 	[searchNumberAttr] (p, caseInsensitive, args, attr, page, pageSize, sort, type) {
@@ -341,7 +345,7 @@ export default class Http {
 		else
 			throw new InvalidOperatorForTypeNumberError(p.operator)
 
-		args[`${attr}__${op}`] = p.value
+		args[`${p.attr || attr}__${op}`] = p.value
 	}
 
 	[searchDateAttr] (p, caseInsensitive, args, attr, page, pageSize, sort, type) {
@@ -358,7 +362,7 @@ export default class Http {
 		else if (p.operator === 'lessOrEqualThan')
 			op = '$lte'
 
-		args[`${attr}__${op}`] = p.value.toISOString()
+		args[`${p.attr || attr}__${op}`] = p.value.toISOString()
 	}
 
 	[searchBooleanAttr] (p, caseInsensitive, args, attr, page, pageSize, sort, type) {
@@ -367,6 +371,6 @@ export default class Http {
 		else if (p.value === false)
 			p.value = 0
 
-		args[`${attr}__$eq`] = p.value
+		args[`${p.attr || attr}__$eq`] = p.value
 	}
 }
