@@ -832,7 +832,7 @@ function () {
 
                 for (_iterator = params[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                   p = _step.value;
-                  if (p.descriptor.array) this[searchArrayAttr](p, args, caseInsensitive);else if (type === String) this[searchStringAttr](p, args, caseInsensitive);else if (type === Number) this[searchNumberAttr](p, args);else if (type === Date) this[searchDateAttr](p, args);else if (type === Boolean) this[searchBooleanAttr](p, args);
+                  if (p.descriptor.array) this[searchArrayAttr](p, args, caseInsensitive);else if (p.descriptor.type === String) this[searchStringAttr](p, args, caseInsensitive);else if (p.descriptor.type === Number) this[searchNumberAttr](p, args);else if (p.descriptor.type === Date) this[searchDateAttr](p, args);else if (p.descriptor.type === Boolean) this[searchBooleanAttr](p, args);
                 }
 
                 _context15.next = 13;

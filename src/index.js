@@ -228,13 +228,13 @@ export default class Http {
 		for (let p of params) {
 			if (p.descriptor.array)
 				this[searchArrayAttr](p, args, caseInsensitive)
-			else if (type === String)
+			else if (p.descriptor.type === String)
 				this[searchStringAttr](p, args, caseInsensitive)
-			else if (type === Number)
+			else if (p.descriptor.type === Number)
 				this[searchNumberAttr](p, args)
-			else if (type === Date)
+			else if (p.descriptor.type === Date)
 				this[searchDateAttr](p, args)
-			else if (type === Boolean)
+			else if (p.descriptor.type === Boolean)
 				this[searchBooleanAttr](p, args)
 		}
 
