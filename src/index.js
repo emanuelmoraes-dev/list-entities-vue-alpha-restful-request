@@ -164,6 +164,9 @@ export default class Http {
 	}
 
 	async find (page, pageSize, sort) {
+		if (sort && sort[0] === '+')
+			sort = sort.substring(1)
+
 		let skip = (page - 1) * pageSize
 
 		return await this.requestGet({
@@ -216,12 +219,18 @@ export default class Http {
 	}
 	
 	async searchAll (page, pageSize, sort) {
+		if (sort && sort[0] === '+')
+			sort = sort.substring(1)
+
 		let entities = await this.find(page, pageSize, sort)
 		let count = await this.findCount()
 		return { count, entities }
 	}
 	
 	async searchAttr (caseInsensitive, page, pageSize, sort, inputSearch, params) {
+		if (sort && sort[0] === '+')
+			sort = sort.substring(1)
+
 		let skip = (page - 1) * pageSize
 		let args = {}
 

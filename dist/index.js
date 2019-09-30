@@ -562,8 +562,9 @@ function () {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
+                if (sort && sort[0] === '+') sort = sort.substring(1);
                 skip = (page - 1) * pageSize;
-                _context8.next = 3;
+                _context8.next = 4;
                 return this.requestGet({
                   params: {
                     skip: skip,
@@ -572,10 +573,10 @@ function () {
                   }
                 });
 
-              case 3:
+              case 4:
                 return _context8.abrupt("return", _context8.sent);
 
-              case 4:
+              case 5:
               case "end":
                 return _context8.stop();
             }
@@ -782,22 +783,23 @@ function () {
           while (1) {
             switch (_context14.prev = _context14.next) {
               case 0:
-                _context14.next = 2;
+                if (sort && sort[0] === '+') sort = sort.substring(1);
+                _context14.next = 3;
                 return this.find(page, pageSize, sort);
 
-              case 2:
+              case 3:
                 entities = _context14.sent;
-                _context14.next = 5;
+                _context14.next = 6;
                 return this.findCount();
 
-              case 5:
+              case 6:
                 count = _context14.sent;
                 return _context14.abrupt("return", {
                   count: count,
                   entities: entities
                 });
 
-              case 7:
+              case 8:
               case "end":
                 return _context14.stop();
             }
@@ -823,53 +825,54 @@ function () {
           while (1) {
             switch (_context15.prev = _context15.next) {
               case 0:
+                if (sort && sort[0] === '+') sort = sort.substring(1);
                 skip = (page - 1) * pageSize;
                 args = {};
                 _iteratorNormalCompletion = true;
                 _didIteratorError = false;
                 _iteratorError = undefined;
-                _context15.prev = 5;
+                _context15.prev = 6;
 
                 for (_iterator = params[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                   p = _step.value;
                   if (p.descriptor.array) this[searchArrayAttr](p, args, caseInsensitive);else if (p.descriptor.type === String) this[searchStringAttr](p, args, caseInsensitive);else if (p.descriptor.type === Number) this[searchNumberAttr](p, args);else if (p.descriptor.type === Date) this[searchDateAttr](p, args);else if (p.descriptor.type === Boolean) this[searchBooleanAttr](p, args);
                 }
 
-                _context15.next = 13;
+                _context15.next = 14;
                 break;
 
-              case 9:
-                _context15.prev = 9;
-                _context15.t0 = _context15["catch"](5);
+              case 10:
+                _context15.prev = 10;
+                _context15.t0 = _context15["catch"](6);
                 _didIteratorError = true;
                 _iteratorError = _context15.t0;
 
-              case 13:
-                _context15.prev = 13;
+              case 14:
                 _context15.prev = 14;
+                _context15.prev = 15;
 
                 if (!_iteratorNormalCompletion && _iterator.return != null) {
                   _iterator.return();
                 }
 
-              case 16:
-                _context15.prev = 16;
+              case 17:
+                _context15.prev = 17;
 
                 if (!_didIteratorError) {
-                  _context15.next = 19;
+                  _context15.next = 20;
                   break;
                 }
 
                 throw _iteratorError;
 
-              case 19:
-                return _context15.finish(16);
-
               case 20:
-                return _context15.finish(13);
+                return _context15.finish(17);
 
               case 21:
-                _context15.next = 23;
+                return _context15.finish(14);
+
+              case 22:
+                _context15.next = 24;
                 return this.requestGet({
                   params: _objectSpread({}, args, {
                     skip: skip,
@@ -878,16 +881,16 @@ function () {
                   })
                 });
 
-              case 23:
+              case 24:
                 entities = _context15.sent;
-                _context15.next = 26;
+                _context15.next = 27;
                 return this.requestGet({
                   params: _objectSpread({}, args, {
                     selectCount: 'true'
                   })
                 });
 
-              case 26:
+              case 27:
                 _ref9 = _context15.sent;
                 count = _ref9.count;
                 return _context15.abrupt("return", {
@@ -895,12 +898,12 @@ function () {
                   entities: entities
                 });
 
-              case 29:
+              case 30:
               case "end":
                 return _context15.stop();
             }
           }
-        }, _callee15, this, [[5, 9, 13, 21], [14,, 16, 20]]);
+        }, _callee15, this, [[6, 10, 14, 22], [15,, 17, 21]]);
       }));
 
       function searchAttr(_x19, _x20, _x21, _x22, _x23, _x24) {
