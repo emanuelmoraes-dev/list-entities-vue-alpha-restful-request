@@ -267,6 +267,12 @@ export default class Http {
 
 		if (p.descriptor.searchSep) {
 			search = p.value.split(p.descriptor.searchSep);
+
+			if (p.attr === '_id') {
+				args._id__$in = search.join(',');
+				return;
+			}
+
 			search = search.map(scape).join('|');
 
 			if (p.operator === 'contains')

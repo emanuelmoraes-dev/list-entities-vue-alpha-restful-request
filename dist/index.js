@@ -918,6 +918,12 @@ function () {
 
       if (p.descriptor.searchSep) {
         search = p.value.split(p.descriptor.searchSep);
+
+        if (p.attr === '_id') {
+          args._id__$in = search.join(',');
+          return;
+        }
+
         search = search.map(_datetimeUtility.scape).join('|');
         if (p.operator === 'contains') search = "/".concat(search, "/");else if (p.operator === 'equals') search = "/^".concat(search, "$/");else if (p.operator === 'startsWith') search = "/^".concat(search, "/");else if (p.operator === 'endsWith') search = "/".concat(search, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
         if (caseInsensitive) search += 'i';
