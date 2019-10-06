@@ -33,12 +33,6 @@ export class InvalidOperatorForTypeDateError extends Error {
 	}
 }
 
-const searchArrayAttr = Symbol('searchArrayAttr')
-const searchStringAttr = Symbol('searchStringAttr')
-const searchNumberAttr = Symbol('searchNumberAttr')
-const searchDateAttr = Symbol('searchDateAttr')
-const searchBooleanAttr = Symbol('searchBooleanAttr')
-
 export default class Http {
 	constructor (urlBase, origin, resource = '/', {
 		request=axios,
@@ -238,15 +232,15 @@ export default class Http {
 
 		for (let p of params) {
 			if (p.descriptor.array)
-				this[searchArrayAttr](p, args, caseInsensitive)
+				this.__searchArrayAttr(p, args, caseInsensitive)
 			else if (p.descriptor.type === String)
-				this[searchStringAttr](p, args, caseInsensitive)
+				this.__searchStringAttr(p, args, caseInsensitive)
 			else if (p.descriptor.type === Number)
-				this[searchNumberAttr](p, args)
+				this.__searchNumberAttr(p, args)
 			else if (p.descriptor.type === Date)
-				this[searchDateAttr](p, args)
+				this.__searchDateAttr(p, args)
 			else if (p.descriptor.type === Boolean)
-				this[searchBooleanAttr](p, args)
+				this.__searchBooleanAttr(p, args)
 		}
 
 		let entities = await this.requestGet({
@@ -268,7 +262,7 @@ export default class Http {
 		return { count, entities }
 	}
 
-	[searchArrayAttr] (p, args, caseInsensitive) {
+	__searchArrayAttr (p, args, caseInsensitive) {
 		let search
 
 		if (p.descriptor.searchSep) {
@@ -318,7 +312,7 @@ export default class Http {
 			throw new InvalidOperatorForTypeArrayError(p.operator)
 	}
 
-	[searchStringAttr] (p, args, caseInsensitive) {
+	__searchStringAttr (p, args, caseInsensitive) {
 		if (p.operator === 'contains')
 			p.value = `/${scape(p.value)}/`
 		else if (p.operator === 'equals')
@@ -336,7 +330,7 @@ export default class Http {
 		args[`${p.attr || attr}__regex`] = p.value
 	}
 
-	[searchNumberAttr] (p, args) {
+	__searchNumberAttr (p, args) {
 		let op
 
 		if (p.operator === 'equals')
@@ -355,7 +349,7 @@ export default class Http {
 		args[`${p.attr || attr}__${op}`] = p.value
 	}
 
-	[searchDateAttr] (p, args) {
+	__searchDateAttr (p, args) {
 		let op
 
 		if (p.operator === 'equals')
@@ -372,7 +366,7 @@ export default class Http {
 		args[`${p.attr || attr}__${op}`] = p.value.toISOString()
 	}
 
-	[searchBooleanAttr] (p, args) {
+	__searchBooleanAttr (p, args) {
 		if (p.value === true)
 			p.value = 1
 		else if (p.value === false)

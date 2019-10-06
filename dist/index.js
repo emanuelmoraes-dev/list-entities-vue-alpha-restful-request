@@ -29,15 +29,15 @@ require("core-js/modules/es6.regexp.split");
 
 require("core-js/modules/es6.number.constructor");
 
+require("core-js/modules/es7.symbol.async-iterator");
+
+require("core-js/modules/es6.symbol");
+
 require("core-js/modules/web.dom.iterable");
 
 require("core-js/modules/es6.array.find");
 
 require("regenerator-runtime/runtime");
-
-require("core-js/modules/es7.symbol.async-iterator");
-
-require("core-js/modules/es6.symbol");
 
 require("es6-promise/auto");
 
@@ -162,11 +162,6 @@ function (_Error4) {
 }(_wrapNativeSuper(Error));
 
 exports.InvalidOperatorForTypeDateError = InvalidOperatorForTypeDateError;
-var searchArrayAttr = Symbol('searchArrayAttr');
-var searchStringAttr = Symbol('searchStringAttr');
-var searchNumberAttr = Symbol('searchNumberAttr');
-var searchDateAttr = Symbol('searchDateAttr');
-var searchBooleanAttr = Symbol('searchBooleanAttr');
 
 var Http =
 /*#__PURE__*/
@@ -839,7 +834,7 @@ function () {
 
                 for (_iterator = params[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                   p = _step.value;
-                  if (p.descriptor.array) this[searchArrayAttr](p, args, caseInsensitive);else if (p.descriptor.type === String) this[searchStringAttr](p, args, caseInsensitive);else if (p.descriptor.type === Number) this[searchNumberAttr](p, args);else if (p.descriptor.type === Date) this[searchDateAttr](p, args);else if (p.descriptor.type === Boolean) this[searchBooleanAttr](p, args);
+                  if (p.descriptor.array) this.__searchArrayAttr(p, args, caseInsensitive);else if (p.descriptor.type === String) this.__searchStringAttr(p, args, caseInsensitive);else if (p.descriptor.type === Number) this.__searchNumberAttr(p, args);else if (p.descriptor.type === Date) this.__searchDateAttr(p, args);else if (p.descriptor.type === Boolean) this.__searchBooleanAttr(p, args);
                 }
 
                 _context15.next = 14;
@@ -917,8 +912,8 @@ function () {
       return searchAttr;
     }()
   }, {
-    key: searchArrayAttr,
-    value: function value(p, args, caseInsensitive) {
+    key: "__searchArrayAttr",
+    value: function __searchArrayAttr(p, args, caseInsensitive) {
       var search;
 
       if (p.descriptor.searchSep) {
@@ -934,29 +929,29 @@ function () {
       if (p.operator === 'equals') args["".concat(p.attr || attr, "__eq")] = p.value;else if (p.operator === 'greaterThan') args["".concat(p.attr || attr, "__$gt")] = p.value;else if (p.operator === 'lessThan') args["".concat(p.attr || attr, "__$lt")] = p.value;else if (p.operator === 'greaterOrEqualThan') args["".concat(p.attr || attr, "__$gte")] = p.value;else if (p.operator === 'lessOrEqualThan') args["".concat(p.attr || attr, "__$lte")] = p.value;else if (p.operator === 'contains') args["".concat(p.attr || attr, "__regex")] = "/".concat(regex, "/");else if (p.operator === 'equals') args["".concat(p.attr || attr, "__regex")] = "/^".concat(regex, "$/");else if (p.operator === 'startsWith') args["".concat(p.attr || attr, "__regex")] = "/^".concat(regex, "/");else if (p.operator === 'endsWith') args["".concat(p.attr || attr, "__regex")] = "/".concat(regex, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
     }
   }, {
-    key: searchStringAttr,
-    value: function value(p, args, caseInsensitive) {
+    key: "__searchStringAttr",
+    value: function __searchStringAttr(p, args, caseInsensitive) {
       if (p.operator === 'contains') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'equals') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "$/");else if (p.operator === 'startsWith') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'endsWith') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "$/");else throw new InvalidOperatorForTypeStringError(p.operator);
       if (caseInsensitive) p.value += 'i';
       args["".concat(p.attr || attr, "__regex")] = p.value;
     }
   }, {
-    key: searchNumberAttr,
-    value: function value(p, args) {
+    key: "__searchNumberAttr",
+    value: function __searchNumberAttr(p, args) {
       var op;
       if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';else throw new InvalidOperatorForTypeNumberError(p.operator);
       args["".concat(p.attr || attr, "__").concat(op)] = p.value;
     }
   }, {
-    key: searchDateAttr,
-    value: function value(p, args) {
+    key: "__searchDateAttr",
+    value: function __searchDateAttr(p, args) {
       var op;
       if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';
       args["".concat(p.attr || attr, "__").concat(op)] = p.value.toISOString();
     }
   }, {
-    key: searchBooleanAttr,
-    value: function value(p, args) {
+    key: "__searchBooleanAttr",
+    value: function __searchBooleanAttr(p, args) {
       if (p.value === true) p.value = 1;else if (p.value === false) p.value = 0;
       args["".concat(p.attr || attr, "__$eq")] = p.value;
     }
