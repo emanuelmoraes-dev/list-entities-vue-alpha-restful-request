@@ -917,43 +917,43 @@ function () {
       var search;
 
       if (p.descriptor.searchSep) {
-        search = p.value.split(descriptor.searchSep);
+        search = p.value.split(p.descriptor.searchSep);
         search = search.map(_datetimeUtility.scape).join('|');
         if (p.operator === 'contains') search = "/".concat(search, "/");else if (p.operator === 'equals') search = "/^".concat(search, "$/");else if (p.operator === 'startsWith') search = "/^".concat(search, "/");else if (p.operator === 'endsWith') search = "/".concat(search, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
         if (caseInsensitive) search += 'i';
-        args["".concat(p.attr || attr, "__regex")] = search;
+        args["".concat(p.attr, "__regex")] = search;
         return;
       }
 
-      regex = (0, _datetimeUtility.scape)(p.value);
-      if (p.operator === 'equals') args["".concat(p.attr || attr, "__eq")] = p.value;else if (p.operator === 'greaterThan') args["".concat(p.attr || attr, "__$gt")] = p.value;else if (p.operator === 'lessThan') args["".concat(p.attr || attr, "__$lt")] = p.value;else if (p.operator === 'greaterOrEqualThan') args["".concat(p.attr || attr, "__$gte")] = p.value;else if (p.operator === 'lessOrEqualThan') args["".concat(p.attr || attr, "__$lte")] = p.value;else if (p.operator === 'contains') args["".concat(p.attr || attr, "__regex")] = "/".concat(regex, "/");else if (p.operator === 'equals') args["".concat(p.attr || attr, "__regex")] = "/^".concat(regex, "$/");else if (p.operator === 'startsWith') args["".concat(p.attr || attr, "__regex")] = "/^".concat(regex, "/");else if (p.operator === 'endsWith') args["".concat(p.attr || attr, "__regex")] = "/".concat(regex, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
+      var regex = (0, _datetimeUtility.scape)(p.value);
+      if (p.operator === 'equals') args["".concat(p.attr, "__eq")] = p.value;else if (p.operator === 'greaterThan') args["".concat(p.attr, "__$gt")] = p.value;else if (p.operator === 'lessThan') args["".concat(p.attr, "__$lt")] = p.value;else if (p.operator === 'greaterOrEqualThan') args["".concat(p.attr, "__$gte")] = p.value;else if (p.operator === 'lessOrEqualThan') args["".concat(p.attr, "__$lte")] = p.value;else if (p.operator === 'contains') args["".concat(p.attr, "__regex")] = "/".concat(regex, "/");else if (p.operator === 'equals') args["".concat(p.attr, "__regex")] = "/^".concat(regex, "$/");else if (p.operator === 'startsWith') args["".concat(p.attr, "__regex")] = "/^".concat(regex, "/");else if (p.operator === 'endsWith') args["".concat(p.attr, "__regex")] = "/".concat(regex, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
     }
   }, {
     key: "__searchStringAttr",
     value: function __searchStringAttr(p, args, caseInsensitive) {
       if (p.operator === 'contains') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'equals') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "$/");else if (p.operator === 'startsWith') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'endsWith') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "$/");else throw new InvalidOperatorForTypeStringError(p.operator);
       if (caseInsensitive) p.value += 'i';
-      args["".concat(p.attr || attr, "__regex")] = p.value;
+      args["".concat(p.attr, "__regex")] = p.value;
     }
   }, {
     key: "__searchNumberAttr",
     value: function __searchNumberAttr(p, args) {
       var op;
       if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';else throw new InvalidOperatorForTypeNumberError(p.operator);
-      args["".concat(p.attr || attr, "__").concat(op)] = p.value;
+      args["".concat(p.attr, "__").concat(op)] = p.value;
     }
   }, {
     key: "__searchDateAttr",
     value: function __searchDateAttr(p, args) {
       var op;
       if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';
-      args["".concat(p.attr || attr, "__").concat(op)] = p.value.toISOString();
+      args["".concat(p.attr, "__").concat(op)] = p.value.toISOString();
     }
   }, {
     key: "__searchBooleanAttr",
     value: function __searchBooleanAttr(p, args) {
       if (p.value === true) p.value = 1;else if (p.value === false) p.value = 0;
-      args["".concat(p.attr || attr, "__$eq")] = p.value;
+      args["".concat(p.attr, "__$eq")] = p.value;
     }
   }, {
     key: "__headersBase",
