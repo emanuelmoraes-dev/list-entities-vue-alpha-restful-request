@@ -765,9 +765,13 @@ function () {
     value: function parseRequestListEntities(caseInsensitive) {
       var searchAll = this.searchAll.bind(this);
       var searchAttr = this.searchAttr.bind(this, caseInsensitive);
+
+      var _delete = this.delete.bind(this);
+
       var rt = {
         searchAll: searchAll,
-        searchAttr: searchAttr
+        searchAttr: searchAttr,
+        delete: _delete
       };
       if (this.searchDefault) rt.searchDefault = this.searchDefault.bind(this, caseInsensitive);
       return rt;

@@ -206,10 +206,12 @@ export default class Http {
 	parseRequestListEntities (caseInsensitive) {
 		const searchAll = this.searchAll.bind(this)
 		const searchAttr = this.searchAttr.bind(this, caseInsensitive)
+		const _delete = this.delete.bind(this)
 
 		let rt = {
 			searchAll,
-			searchAttr
+			searchAttr,
+			delete: _delete
 		}
 
 		if (this.searchDefault)
