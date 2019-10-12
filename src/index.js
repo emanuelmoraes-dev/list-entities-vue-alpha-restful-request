@@ -319,6 +319,12 @@ export default class Http {
 	}
 
 	__searchStringAttr (p, args, caseInsensitive) {
+
+		if (p.operator === 'equals_not') {
+			args[`${p.attr}__$ne`] = p.value;
+			return;
+		}
+
 		if (p.operator === 'contains')
 			p.value = `/${scape(p.value)}/`;
 		else if (p.operator === 'equals')
