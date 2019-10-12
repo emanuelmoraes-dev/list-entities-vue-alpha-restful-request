@@ -265,7 +265,7 @@ export default class Http {
 	__searchArrayAttr (p, args, caseInsensitive) {
 		let search;
 
-		if (p.descriptor.searchSep) {
+		if (p.descriptor.searchSep && p.operator !== 'equals_not') {
 			search = p.value.split(p.descriptor.searchSep);
 
 			if (p.attr === '_id') {
@@ -291,6 +291,16 @@ export default class Http {
 
 			args[`${p.attr}__regex`] = search;
 
+			return;
+		} else if (p.operator === 'equals_not') {
+			search = p.value.split(p.descriptor.searchSep);
+
+			if (p.attr === '_id') {
+				args._id__$nin = search.join(',');
+				return;
+			}
+
+			args[`${p.attr}__$nin`] = search.join(',');
 			return;
 		}
 		
