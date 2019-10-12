@@ -916,7 +916,7 @@ function () {
     value: function __searchArrayAttr(p, args, caseInsensitive) {
       var search;
 
-      if (p.descriptor.searchSep) {
+      if (p.descriptor.searchSep && p.operator !== 'equals_not') {
         search = p.value.split(p.descriptor.searchSep);
 
         if (p.attr === '_id') {
@@ -929,6 +929,16 @@ function () {
         if (caseInsensitive) search += 'i';
         args["".concat(p.attr, "__regex")] = search;
         return;
+      } else if (p.operator === 'equals_not') {
+        search = p.value.split(p.descriptor.searchSep);
+
+        if (p.attr === '_id') {
+          args._id__$nin = search.join(',');
+          return;
+        }
+
+        args["".concat(p.attr, "__$nin")] = search.join(',');
+        return;
       }
 
       var regex = (0, _datetimeUtility.scape)(p.value);
@@ -937,6 +947,11 @@ function () {
   }, {
     key: "__searchStringAttr",
     value: function __searchStringAttr(p, args, caseInsensitive) {
+      if (p.operator === 'equals_not') {
+        args["".concat(p.attr, "__$ne")] = p.value;
+        return;
+      }
+
       if (p.operator === 'contains') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'equals') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "$/");else if (p.operator === 'startsWith') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'endsWith') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "$/");else throw new InvalidOperatorForTypeStringError(p.operator);
       if (caseInsensitive) p.value += 'i';
       args["".concat(p.attr, "__regex")] = p.value;
