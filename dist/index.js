@@ -172,6 +172,8 @@ function () {
     var _ref = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {},
         _ref$request = _ref.request,
         request = _ref$request === void 0 ? _axios.default : _ref$request,
+        _ref$defaultAuth = _ref.defaultAuth,
+        defaultAuth = _ref$defaultAuth === void 0 ? false : _ref$defaultAuth,
         _ref$authUrl = _ref.authUrl,
         authUrl = _ref$authUrl === void 0 ? 'auth' : _ref$authUrl,
         _ref$authUrlMethod = _ref.authUrlMethod,
@@ -192,6 +194,7 @@ function () {
     this.urlBase = urlBase;
     this.origin = origin;
     this.request = request;
+    this.defaultAuth = defaultAuth;
     this.authUrl = authUrl;
     this.authUrlMethod = authUrlMethod;
     this.headerRefreshTokenName = headerRefreshTokenName;
@@ -232,17 +235,25 @@ function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                if (this.defaultAuth) {
+                  _context.next = 2;
+                  break;
+                }
+
+                return _context.abrupt("return", this.__headersBase);
+
+              case 2:
+                _context.next = 4;
                 return this.request[this.authUrlMethod](this.url(this.authUrl), {}, {
                   headers: this.__headersBase
                 });
 
-              case 2:
+              case 4:
                 _ref2 = _context.sent;
                 data = _ref2.data;
                 return _context.abrupt("return", _objectSpread({}, this.__headersBase, _defineProperty({}, this.headerRefreshTokenName, data[this.responseRefreshTokenName])));
 
-              case 5:
+              case 7:
               case "end":
                 return _context.stop();
             }
