@@ -312,7 +312,7 @@ export default class Http {
 		let regex = scape(p.value);
 
 		if (p.operator === 'equals')
-			args[`${p.attr}__eq`] = p.value;
+			args[`${p.attr}__$eq`] = p.value;
 		else if (p.operator === 'greaterThan')
 			args[`${p.attr}__$gt`] = p.value;
 		else if (p.operator === 'lessThan')
