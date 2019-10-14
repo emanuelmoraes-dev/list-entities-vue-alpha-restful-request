@@ -36,6 +36,7 @@ export class InvalidOperatorForTypeDateError extends Error {
 export default class Http {
 	constructor (urlBase, origin, resource = '/', {
 		request=axios,
+		defaultAuth=false,
 		authUrl='auth',
 		authUrlMethod='post',
 		headerRefreshTokenName='x-refresh-token',
@@ -47,6 +48,7 @@ export default class Http {
 		this.urlBase = urlBase;
 		this.origin = origin;
 		this.request = request;
+		this.defaultAuth = defaultAuth;
 		this.authUrl = authUrl;
 		this.authUrlMethod = authUrlMethod;
 		this.headerRefreshTokenName = headerRefreshTokenName;
@@ -85,6 +87,9 @@ export default class Http {
 	}
 
 	async getHeaders () {
+		if (!this.defaultAuth)
+			return this.__headersBase;
+
 		let { data } = await this.request[this.authUrlMethod](this.url(this.authUrl), {}, { headers: this.__headersBase });
 
 		return {
