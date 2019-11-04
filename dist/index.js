@@ -3,17 +3,19 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.InvalidOperatorForTypeDateError = exports.InvalidOperatorForTypeNumberError = exports.InvalidOperatorForTypeStringError = exports.InvalidOperatorForTypeArrayError = void 0;
-
-require("core-js/modules/es6.string.iterator");
+exports.default = exports.InvalidOperatorFor_idError = exports.InvalidValueForTypeBooleanError = exports.InvalidOperatorForTypeDateError = exports.InvalidOperatorForTypeNumberError = exports.InvalidOperatorForTypeStringError = exports.InvalidOperatorForTypeArrayError = void 0;
 
 require("core-js/modules/es6.map");
 
 require("core-js/modules/es6.reflect.construct");
 
-require("core-js/modules/es6.regexp.to-string");
-
 require("core-js/modules/es6.object.set-prototype-of");
+
+require("core-js/modules/es6.string.iterator");
+
+require("core-js/modules/es6.array.from");
+
+require("core-js/modules/es6.regexp.to-string");
 
 require("core-js/modules/es7.object.get-own-property-descriptors");
 
@@ -46,6 +48,14 @@ var _axios = _interopRequireDefault(require("axios"));
 var _datetimeUtility = require("datetime-utility");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -163,6 +173,46 @@ function (_Error4) {
 
 exports.InvalidOperatorForTypeDateError = InvalidOperatorForTypeDateError;
 
+var InvalidValueForTypeBooleanError =
+/*#__PURE__*/
+function (_Error5) {
+  _inherits(InvalidValueForTypeBooleanError, _Error5);
+
+  function InvalidValueForTypeBooleanError(value, message) {
+    var _this5;
+
+    _classCallCheck(this, InvalidValueForTypeBooleanError);
+
+    _this5 = _possibleConstructorReturn(this, _getPrototypeOf(InvalidValueForTypeBooleanError).call(this, message || "invalid \"".concat(value, "\" value for type Boolean")));
+    _this5.value = value;
+    return _this5;
+  }
+
+  return InvalidValueForTypeBooleanError;
+}(_wrapNativeSuper(Error));
+
+exports.InvalidValueForTypeBooleanError = InvalidValueForTypeBooleanError;
+
+var InvalidOperatorFor_idError =
+/*#__PURE__*/
+function (_Error6) {
+  _inherits(InvalidOperatorFor_idError, _Error6);
+
+  function InvalidOperatorFor_idError(operator, message) {
+    var _this6;
+
+    _classCallCheck(this, InvalidOperatorFor_idError);
+
+    _this6 = _possibleConstructorReturn(this, _getPrototypeOf(InvalidOperatorFor_idError).call(this, message || "invalid \"".concat(operator, "\" operator for attribute \"_id\"")));
+    _this6.operator = operator;
+    return _this6;
+  }
+
+  return InvalidOperatorFor_idError;
+}(_wrapNativeSuper(Error));
+
+exports.InvalidOperatorFor_idError = InvalidOperatorFor_idError;
+
 var Http =
 /*#__PURE__*/
 function () {
@@ -172,6 +222,8 @@ function () {
     var _ref = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {},
         _ref$request = _ref.request,
         request = _ref$request === void 0 ? _axios.default : _ref$request,
+        _ref$caseInsensitive = _ref.caseInsensitive,
+        caseInsensitive = _ref$caseInsensitive === void 0 ? true : _ref$caseInsensitive,
         _ref$defaultAuth = _ref.defaultAuth,
         defaultAuth = _ref$defaultAuth === void 0 ? false : _ref$defaultAuth,
         _ref$authUrl = _ref.authUrl,
@@ -194,6 +246,7 @@ function () {
     this.urlBase = urlBase;
     this.origin = origin;
     this.request = request;
+    this.caseInsensitive = caseInsensitive;
     this.defaultAuth = defaultAuth;
     this.authUrl = authUrl;
     this.authUrlMethod = authUrlMethod;
@@ -204,7 +257,6 @@ function () {
     this.allowCredentials = allowCredentials;
     if (resource && resource[0] !== '/') resource = "/".concat(resource);
     this.resource = resource;
-    this.parseRequestListEntities = this.parseRequestListEntities.bind(this);
   }
 
   _createClass(Http, [{
@@ -767,27 +819,11 @@ function () {
       return findOne;
     }()
   }, {
-    key: "parseRequestListEntities",
-    value: function parseRequestListEntities(caseInsensitive) {
-      var searchAll = this.searchAll.bind(this);
-      var searchAttr = this.searchAttr.bind(this, caseInsensitive);
-
-      var _delete = this.delete.bind(this);
-
-      var rt = {
-        searchAll: searchAll,
-        searchAttr: searchAttr,
-        delete: _delete
-      };
-      if (this.searchDefault) rt.searchDefault = this.searchDefault.bind(this, caseInsensitive);
-      return rt;
-    }
-  }, {
     key: "searchAll",
     value: function () {
       var _searchAll = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee14(page, pageSize, sort) {
+      regeneratorRuntime.mark(function _callee14(page, pageSize, sort, inputSearch) {
         var entities, count;
         return regeneratorRuntime.wrap(function _callee14$(_context14) {
           while (1) {
@@ -817,7 +853,7 @@ function () {
         }, _callee14, this);
       }));
 
-      function searchAll(_x16, _x17, _x18) {
+      function searchAll(_x16, _x17, _x18, _x19) {
         return _searchAll.apply(this, arguments);
       }
 
@@ -828,61 +864,62 @@ function () {
     value: function () {
       var _searchAttr = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee15(caseInsensitive, page, pageSize, sort, inputSearch, params) {
+      regeneratorRuntime.mark(function _callee15(page, pageSize, sort, inputSearch, paramsRequest, params) {
         var skip, args, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, p, entities, _ref9, count;
 
         return regeneratorRuntime.wrap(function _callee15$(_context15) {
           while (1) {
             switch (_context15.prev = _context15.next) {
               case 0:
+                params = [].concat(_toConsumableArray(paramsRequest), _toConsumableArray(params));
                 if (sort && sort[0] === '+') sort = sort.substring(1);
                 skip = (page - 1) * pageSize;
                 args = {};
                 _iteratorNormalCompletion = true;
                 _didIteratorError = false;
                 _iteratorError = undefined;
-                _context15.prev = 6;
+                _context15.prev = 7;
 
                 for (_iterator = params[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                   p = _step.value;
-                  if (p.descriptor.array) this.__searchArrayAttr(p, args, caseInsensitive);else if (p.descriptor.type === String) this.__searchStringAttr(p, args, caseInsensitive);else if (p.descriptor.type === Number) this.__searchNumberAttr(p, args);else if (p.descriptor.type === Date) this.__searchDateAttr(p, args);else if (p.descriptor.type === Boolean) this.__searchBooleanAttr(p, args);
+                  if (p.descriptor.array) this.__searchArrayAttr(p, args);else if (p.descriptor.type === String) this.__searchStringAttr(p, args);else if (p.descriptor.type === Number) this.__searchNumberAttr(p, args);else if (p.descriptor.type === Date) this.__searchDateAttr(p, args);else if (p.descriptor.type === Boolean) this.__searchBooleanAttr(p, args);
                 }
 
-                _context15.next = 14;
+                _context15.next = 15;
                 break;
 
-              case 10:
-                _context15.prev = 10;
-                _context15.t0 = _context15["catch"](6);
+              case 11:
+                _context15.prev = 11;
+                _context15.t0 = _context15["catch"](7);
                 _didIteratorError = true;
                 _iteratorError = _context15.t0;
 
-              case 14:
-                _context15.prev = 14;
+              case 15:
                 _context15.prev = 15;
+                _context15.prev = 16;
 
                 if (!_iteratorNormalCompletion && _iterator.return != null) {
                   _iterator.return();
                 }
 
-              case 17:
-                _context15.prev = 17;
+              case 18:
+                _context15.prev = 18;
 
                 if (!_didIteratorError) {
-                  _context15.next = 20;
+                  _context15.next = 21;
                   break;
                 }
 
                 throw _iteratorError;
 
-              case 20:
-                return _context15.finish(17);
-
               case 21:
-                return _context15.finish(14);
+                return _context15.finish(18);
 
               case 22:
-                _context15.next = 24;
+                return _context15.finish(15);
+
+              case 23:
+                _context15.next = 25;
                 return this.requestGet({
                   params: _objectSpread({}, args, {
                     skip: skip,
@@ -891,16 +928,16 @@ function () {
                   })
                 });
 
-              case 24:
+              case 25:
                 entities = _context15.sent;
-                _context15.next = 27;
+                _context15.next = 28;
                 return this.requestGet({
                   params: _objectSpread({}, args, {
                     selectCount: 'true'
                   })
                 });
 
-              case 27:
+              case 28:
                 _ref9 = _context15.sent;
                 count = _ref9.count;
                 return _context15.abrupt("return", {
@@ -908,15 +945,15 @@ function () {
                   entities: entities
                 });
 
-              case 30:
+              case 31:
               case "end":
                 return _context15.stop();
             }
           }
-        }, _callee15, this, [[6, 10, 14, 22], [15,, 17, 21]]);
+        }, _callee15, this, [[7, 11, 15, 23], [16,, 18, 22]]);
       }));
 
-      function searchAttr(_x19, _x20, _x21, _x22, _x23, _x24) {
+      function searchAttr(_x20, _x21, _x22, _x23, _x24, _x25) {
         return _searchAttr.apply(this, arguments);
       }
 
@@ -924,68 +961,228 @@ function () {
     }()
   }, {
     key: "__searchArrayAttr",
-    value: function __searchArrayAttr(p, args, caseInsensitive) {
+    value: function __searchArrayAttr(p, args) {
       var search;
 
-      if (p.descriptor.searchSep && p.operator !== 'equals_not') {
-        search = p.value.split(p.descriptor.searchSep);
+      if (p.descriptor.searchSepOr) {
+        search = p.value.split(p.descriptor.searchSepOr);
 
-        if (p.attr === '_id') {
+        if (p.operator === '$neq' && p.attr === '_id') {
+          args._id__$nin = search.join(',');
+          return;
+        } else if (p.operator === '$eq' && p.attr === '_id') {
           args._id__$in = search.join(',');
           return;
+        } else if (p.attr === '_id') {
+          throw new InvalidOperatorFor_idError(p.operator);
         }
 
         search = search.map(_datetimeUtility.scape).join('|');
-        if (p.operator === 'contains') search = "/".concat(search, "/");else if (p.operator === 'equals') search = "/^".concat(search, "$/");else if (p.operator === 'startsWith') search = "/^".concat(search, "/");else if (p.operator === 'endsWith') search = "/".concat(search, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
-        if (caseInsensitive) search += 'i';
-        args["".concat(p.attr, "__regex")] = search;
-        return;
-      } else if (p.operator === 'equals_not') {
-        search = p.value.split(p.descriptor.searchSep);
 
-        if (p.attr === '_id') {
-          args._id__$nin = search.join(',');
-          return;
+        var _op;
+
+        if (p.operator === '$in') {
+          search = "/".concat(search, "/");
+          _op = 'regex';
+        } else if (p.operator === '$nin') {
+          search = "/".concat(search, "/");
+          _op = '$not_regex';
+        } else if (p.operator === '$eq') {
+          search = "/^".concat(search, "$/");
+          _op = 'regex';
+        } else if (p.operator === '$neq') {
+          search = "/^".concat(search, "$/");
+          _op = '$not_regex';
+        } else if (p.operator === '$sw') {
+          search = "/^".concat(search, "/");
+          _op = 'regex';
+        } else if (p.operator === '$nsw') {
+          search = "/^".concat(search, "/");
+          _op = '$not_regex';
+        } else if (p.operator === '$ew') {
+          search = "/".concat(search, "$/");
+          _op = 'regex';
+        } else if (p.operator === '$new') {
+          search = "/".concat(search, "$/");
+          _op = '$not_regex';
+        } else {
+          throw new InvalidOperatorForTypeArrayError(p.operator);
         }
 
-        args["".concat(p.attr, "__$nin")] = search.join(',');
+        if (this.caseInsensitive) search += 'i';
+        args["".concat(p.attr, "__").concat(_op)] = search;
         return;
+      }
+
+      if (p.operator === '$eq' && p.attr === '_id') {
+        args._id__$eq = p.value;
+        return;
+      } else if (p.operator === '$neq' && p.attr === '_id') {
+        args._id__$ne = p.value;
+        return;
+      } else if (p.attr === '_id') {
+        throw new InvalidOperatorFor_idError(p.operator);
       }
 
       var regex = (0, _datetimeUtility.scape)(p.value);
-      if (p.operator === 'equals') args["".concat(p.attr, "__$eq")] = p.value;else if (p.operator === 'greaterThan') args["".concat(p.attr, "__$gt")] = p.value;else if (p.operator === 'lessThan') args["".concat(p.attr, "__$lt")] = p.value;else if (p.operator === 'greaterOrEqualThan') args["".concat(p.attr, "__$gte")] = p.value;else if (p.operator === 'lessOrEqualThan') args["".concat(p.attr, "__$lte")] = p.value;else if (p.operator === 'contains') args["".concat(p.attr, "__regex")] = "/".concat(regex, "/");else if (p.operator === 'equals') args["".concat(p.attr, "__regex")] = "/^".concat(regex, "$/");else if (p.operator === 'startsWith') args["".concat(p.attr, "__regex")] = "/^".concat(regex, "/");else if (p.operator === 'endsWith') args["".concat(p.attr, "__regex")] = "/".concat(regex, "$/");else throw new InvalidOperatorForTypeArrayError(p.operator);
+      var op;
+
+      if (p.operator === '$eq') {
+        search = p.value;
+        op = '$eq';
+      } else if (p.operator === '$neq') {
+        search = p.value;
+        op = '$ne';
+      } else if (p.operator === '$gt') {
+        search = p.value;
+        op = '$gt';
+      } else if (p.operator === '$lt') {
+        search = p.value;
+        op = '$lt';
+      } else if (p.operator === '$gte') {
+        search = p.value;
+        op = '$gte';
+      } else if (p.operator === '$lte') {
+        search = p.value;
+        op = '$lte';
+      } else if (p.operator === '$in') {
+        search = "/".concat(regex, "/").concat(this.caseInsensitive ? 'i' : '');
+        op = 'regex';
+      } else if (p.operator === '$nin') {
+        search = "/".concat(regex, "/").concat(this.caseInsensitive ? 'i' : '');
+        op = '$not_regex';
+      } else if (p.operator === '$sw') {
+        search = "/^".concat(regex, "/").concat(this.caseInsensitive ? 'i' : '');
+        op = 'regex';
+      } else if (p.operator === '$nsw') {
+        search = "/^".concat(regex, "/").concat(this.caseInsensitive ? 'i' : '');
+        op = '$not_regex';
+      } else if (p.operator === '$ew') {
+        search = "/".concat(regex, "$/").concat(this.caseInsensitive ? 'i' : '');
+        op = 'regex';
+      } else if (p.operator === '$new') {
+        search = "/".concat(regex, "$/").concat(this.caseInsensitive ? 'i' : '');
+        op = '$not_regex';
+      } else {
+        throw new InvalidOperatorForTypeArrayError(p.operator);
+      }
+
+      args["".concat(p.attr, "__").concat(op)] = search;
     }
   }, {
     key: "__searchStringAttr",
-    value: function __searchStringAttr(p, args, caseInsensitive) {
-      if (p.operator === 'equals_not') {
-        args["".concat(p.attr, "__$ne")] = p.value;
-        return;
+    value: function __searchStringAttr(p, args) {
+      var search;
+      var op;
+
+      if (p.operator === '$in') {
+        search = "/".concat((0, _datetimeUtility.scape)(p.value), "/");
+        op = 'regex';
+      } else if (p.operator === '$nin') {
+        search = "/".concat((0, _datetimeUtility.scape)(p.value), "/");
+        op = '$not_regex';
+      } else if (p.operator === '$eq') {
+        search = "/^".concat((0, _datetimeUtility.scape)(p.value), "$/");
+        op = 'regex';
+      } else if (p.operator === '$neq') {
+        search = "/^".concat((0, _datetimeUtility.scape)(p.value), "$/");
+        op = '$not_regex';
+      } else if (p.operator === '$sw') {
+        search = "/^".concat((0, _datetimeUtility.scape)(p.value), "/");
+        op = 'regex';
+      } else if (p.operator === '$nsw') {
+        search = "/^".concat((0, _datetimeUtility.scape)(p.value), "/");
+        op = '$not_regex';
+      } else if (p.operator === '$ew') {
+        search = "/".concat((0, _datetimeUtility.scape)(p.value), "$/");
+        op = 'regex';
+      } else if (p.operator === '$new') {
+        search = "/".concat((0, _datetimeUtility.scape)(p.value), "$/");
+        op = '$not_regex';
+      } else {
+        throw new InvalidOperatorForTypeStringError(p.operator);
       }
 
-      if (p.operator === 'contains') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'equals') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "$/");else if (p.operator === 'startsWith') p.value = "/^".concat((0, _datetimeUtility.scape)(p.value), "/");else if (p.operator === 'endsWith') p.value = "/".concat((0, _datetimeUtility.scape)(p.value), "$/");else throw new InvalidOperatorForTypeStringError(p.operator);
-      if (caseInsensitive) p.value += 'i';
-      args["".concat(p.attr, "__regex")] = p.value;
+      if (this.caseInsensitive) search += 'i';
+      args["".concat(p.attr, "__").concat(op)] = search;
     }
   }, {
     key: "__searchNumberAttr",
     value: function __searchNumberAttr(p, args) {
+      var search;
       var op;
-      if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';else throw new InvalidOperatorForTypeNumberError(p.operator);
-      args["".concat(p.attr, "__").concat(op)] = p.value;
+
+      if (p.operator === '$eq') {
+        search = p.value;
+        op = '$eq';
+      } else if (p.operator === '$neq') {
+        search = p.value;
+        op = '$ne';
+      } else if (p.operator === '$gt') {
+        search = p.value;
+        op = '$gt';
+      } else if (p.operator === '$lt') {
+        search = p.value;
+        op = '$lt';
+      } else if (p.operator === '$gte') {
+        search = p.value;
+        op = '$gte';
+      } else if (p.operator === '$lte') {
+        search = p.value;
+        op = '$lte';
+      } else {
+        throw new InvalidOperatorForTypeNumberError(p.operator);
+      }
+
+      args["".concat(p.attr, "__").concat(op)] = search;
     }
   }, {
     key: "__searchDateAttr",
     value: function __searchDateAttr(p, args) {
+      var search;
       var op;
-      if (p.operator === 'equals') op = '$eq';else if (p.operator === 'greaterThan') op = '$gt';else if (p.operator === 'lessThan') op = '$lt';else if (p.operator === 'greaterOrEqualThan') op = '$gte';else if (p.operator === 'lessOrEqualThan') op = '$lte';
-      args["".concat(p.attr, "__").concat(op)] = p.value.toISOString();
+
+      if (p.operator === '$eq') {
+        search = p.value.toISOString();
+        op = '$eq';
+      } else if (p.operator === '$neq') {
+        search = p.value.toISOString();
+        op = '$ne';
+      } else if (p.operator === '$gt') {
+        search = p.value.toISOString();
+        op = '$gt';
+      } else if (p.operator === '$lt') {
+        search = p.value.toISOString();
+        op = '$lt';
+      } else if (p.operator === '$gte') {
+        search = p.value.toISOString();
+        op = '$gte';
+      } else if (p.operator === '$lte') {
+        search = p.value.toISOString();
+        op = '$lte';
+      } else {
+        throw new InvalidOperatorForTypeDateError(p.operator);
+      }
+
+      args["".concat(p.attr, "__").concat(op)] = search;
     }
   }, {
     key: "__searchBooleanAttr",
     value: function __searchBooleanAttr(p, args) {
-      if (p.value === true) p.value = 1;else if (p.value === false) p.value = 0;
-      args["".concat(p.attr, "__$eq")] = p.value;
+      var search;
+      var op;
+
+      if (p.value === true) {
+        search = 1;
+        op = '$eq';
+      } else if (p.value === false) {
+        search = 0;
+        op = '$eq';
+      } else {
+        throw new InvalidValueForTypeBooleanError(p.value);
+      }
+
+      args["".concat(p.attr, "__").concat(op)] = search;
     }
   }, {
     key: "__headersBase",
