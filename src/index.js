@@ -33,9 +33,26 @@ export class InvalidOperatorForTypeDateError extends Error {
 	}
 }
 
+export class InvalidValueForTypeBooleanError extends Error {
+	constructor (value, message) {
+		super(message || `invalid "${value}" value for type Boolean`);
+
+		this.value = value;
+	}
+}
+
+export class InvalidOperatorFor_idError extends Error {
+	constructor (operator, message) {
+		super(message || `invalid "${operator}" operator for attribute "_id"`);
+
+		this.operator = operator;
+	}
+}
+
 export default class Http {
 	constructor (urlBase, origin, resource = '/', {
 		request=axios,
+		caseInsensitive=true,
 		defaultAuth=false,
 		authUrl='auth',
 		authUrlMethod='post',
@@ -48,6 +65,7 @@ export default class Http {
 		this.urlBase = urlBase;
 		this.origin = origin;
 		this.request = request;
+		this.caseInsensitive = caseInsensitive;
 		this.defaultAuth = defaultAuth;
 		this.authUrl = authUrl;
 		this.authUrlMethod = authUrlMethod;
@@ -61,8 +79,6 @@ export default class Http {
 			resource = `/${resource}`;
 		
 		this.resource = resource;
-
-		this.parseRequestListEntities = this.parseRequestListEntities.bind(this);
 	}
 
 	get __headersBase () {
@@ -201,25 +217,8 @@ export default class Http {
 	async findOne (id, options = {}) {
 		return await this.requestGet(id, { ...options });
 	}
-
-	parseRequestListEntities (caseInsensitive) {
-		const searchAll = this.searchAll.bind(this);
-		const searchAttr = this.searchAttr.bind(this, caseInsensitive);
-		const _delete = this.delete.bind(this);
-
-		let rt = {
-			searchAll,
-			searchAttr,
-			delete: _delete
-		};
-
-		if (this.searchDefault)
-			rt.searchDefault = this.searchDefault.bind(this, caseInsensitive);
-
-		return rt;
-	}
 	
-	async searchAll (page, pageSize, sort) {
+	async searchAll (page, pageSize, sort, inputSearch) {
 		if (sort && sort[0] === '+')
 			sort = sort.substring(1);
 
@@ -228,7 +227,9 @@ export default class Http {
 		return { count, entities };
 	}
 	
-	async searchAttr (caseInsensitive, page, pageSize, sort, inputSearch, params) {
+	async searchAttr (page, pageSize, sort, inputSearch, paramsRequest, params) {
+		params = [...paramsRequest, ...params];
+
 		if (sort && sort[0] === '+')
 			sort = sort.substring(1);
 
@@ -237,9 +238,9 @@ export default class Http {
 
 		for (let p of params) {
 			if (p.descriptor.array)
-				this.__searchArrayAttr(p, args, caseInsensitive);
+				this.__searchArrayAttr(p, args);
 			else if (p.descriptor.type === String)
-				this.__searchStringAttr(p, args, caseInsensitive);
+				this.__searchStringAttr(p, args);
 			else if (p.descriptor.type === Number)
 				this.__searchNumberAttr(p, args);
 			else if (p.descriptor.type === Date)
@@ -267,138 +268,228 @@ export default class Http {
 		return { count, entities };
 	}
 
-	__searchArrayAttr (p, args, caseInsensitive) {
+	__searchArrayAttr (p, args) {
 		let search;
 
-		if (p.descriptor.searchSep && p.operator !== 'equals_not') {
-			search = p.value.split(p.descriptor.searchSep);
+		if (p.descriptor.searchSepOr) {
+			search = p.value.split(p.descriptor.searchSepOr);
 
-			if (p.attr === '_id') {
+			if (p.operator === '$neq' && p.attr === '_id') {
+				args._id__$nin = search.join(',');
+				return;
+			} else if (p.operator === '$eq' && p.attr === '_id') {
 				args._id__$in = search.join(',');
 				return;
+			} else if (p.attr === '_id') {
+				throw new InvalidOperatorFor_idError(p.operator);
 			}
 
 			search = search.map(scape).join('|');
 
-			if (p.operator === 'contains')
+			let op;
+
+			if (p.operator === '$in') {
 				search = `/${search}/`;
-			else if (p.operator === 'equals')
+				op = 'regex';
+			} else if (p.operator === '$nin') {
+				search = `/${search}/`;
+				op = '$not_regex';
+			} else if (p.operator === '$eq') {
 				search = `/^${search}$/`;
-			else if (p.operator === 'startsWith')
+				op = 'regex';
+			} else if (p.operator === '$neq') {
+				search = `/^${search}$/`;
+				op = '$not_regex';
+			} else if (p.operator === '$sw') {
 				search = `/^${search}/`;
-			else if (p.operator === 'endsWith')
+				op = 'regex';
+			} else if (p.operator === '$nsw') {
+				search = `/^${search}/`;
+				op = '$not_regex';
+			} else if (p.operator === '$ew') {
 				search = `/${search}$/`;
-			else
+				op = 'regex';
+			} else if (p.operator === '$new') {
+				search = `/${search}$/`;
+				op = '$not_regex';
+			} else {
 				throw new InvalidOperatorForTypeArrayError(p.operator);
-
-			if (caseInsensitive)
-				search += 'i';
-
-			args[`${p.attr}__regex`] = search;
-
-			return;
-		} else if (p.operator === 'equals_not') {
-			search = p.value.split(p.descriptor.searchSep);
-
-			if (p.attr === '_id') {
-				args._id__$nin = search.join(',');
-				return;
 			}
 
-			args[`${p.attr}__$nin`] = search.join(',');
+			if (this.caseInsensitive)
+				search += 'i';
+
+			args[`${p.attr}__${op}`] = search;
+
 			return;
+		}
+
+		if (p.operator === '$eq' && p.attr === '_id') {
+			args._id__$eq = p.value;
+			return;
+		} else if (p.operator === '$neq' && p.attr === '_id') {
+			args._id__$ne = p.value;
+			return;
+		} else if (p.attr === '_id') {
+			throw new InvalidOperatorFor_idError(p.operator);
 		}
 		
 		let regex = scape(p.value);
+		let op;
 
-		if (p.operator === 'equals')
-			args[`${p.attr}__eq`] = p.value;
-		else if (p.operator === 'greaterThan')
-			args[`${p.attr}__$gt`] = p.value;
-		else if (p.operator === 'lessThan')
-			args[`${p.attr}__$lt`] = p.value;
-		else if (p.operator === 'greaterOrEqualThan')
-			args[`${p.attr}__$gte`] = p.value;
-		else if (p.operator === 'lessOrEqualThan')
-			args[`${p.attr}__$lte`] = p.value;
-		else if (p.operator === 'contains')
-			args[`${p.attr}__regex`] = `/${regex}/`;
-		else if (p.operator === 'equals')
-			args[`${p.attr}__regex`] = `/^${regex}$/`;
-		else if (p.operator === 'startsWith')
-			args[`${p.attr}__regex`] = `/^${regex}/`;
-		else if (p.operator === 'endsWith')
-			args[`${p.attr}__regex`] = `/${regex}$/`;
-		else
+		if (p.operator === '$eq') {
+			search = p.value;
+			op = '$eq';
+		} else if (p.operator === '$neq') {
+			search = p.value;
+			op = '$ne';
+		} else if (p.operator === '$gt') {
+			search = p.value;
+			op = '$gt';
+		} else if (p.operator === '$lt') {
+			search = p.value;
+			op = '$lt';
+		} else if (p.operator === '$gte') {
+			search = p.value;
+			op = '$gte';
+		} else if (p.operator === '$lte') {
+			search = p.value;
+			op = '$lte';
+		} else if (p.operator === '$in') {
+			search = `/${regex}/${this.caseInsensitive ? 'i' : ''}`;
+			op = 'regex';
+		} else if (p.operator === '$nin') {
+			search = `/${regex}/${this.caseInsensitive ? 'i' : ''}`;
+			op = '$not_regex';
+		} else if (p.operator === '$sw') {
+			search = `/^${regex}/${this.caseInsensitive ? 'i' : ''}`;
+			op = 'regex';
+		} else if (p.operator === '$nsw') {
+			search = `/^${regex}/${this.caseInsensitive ? 'i' : ''}`;
+			op = '$not_regex';
+		} else if (p.operator === '$ew') {
+			search = `/${regex}$/${this.caseInsensitive ? 'i' : ''}`;
+			op = 'regex';
+		} else if (p.operator === '$new') {
+			search = `/${regex}$/${this.caseInsensitive ? 'i' : ''}`;
+			op = '$not_regex';
+		} else {
 			throw new InvalidOperatorForTypeArrayError(p.operator);
-	}
-
-	__searchStringAttr (p, args, caseInsensitive) {
-
-		if (p.operator === 'equals_not') {
-			args[`${p.attr}__$ne`] = p.value;
-			return;
 		}
 
-		if (p.operator === 'contains')
-			p.value = `/${scape(p.value)}/`;
-		else if (p.operator === 'equals')
-			p.value = `/^${scape(p.value)}$/`;
-		else if (p.operator === 'startsWith')
-			p.value = `/^${scape(p.value)}/`;
-		else if (p.operator === 'endsWith')
-			p.value = `/${scape(p.value)}$/`;
-		else
+		args[`${p.attr}__${op}`] = search;
+	}
+
+	__searchStringAttr (p, args) {
+		let search;
+		let op;
+
+		if (p.operator === '$in') {
+			search = `/${scape(p.value)}/`;
+			op = 'regex';
+		} else if (p.operator === '$nin') {
+			search = `/${scape(p.value)}/`;
+			op = '$not_regex';
+		} else if (p.operator === '$eq') {
+			search = `/^${scape(p.value)}$/`;
+			op = 'regex';
+		} else if (p.operator === '$neq') {
+			search = `/^${scape(p.value)}$/`;
+			op = '$not_regex';
+		} else if (p.operator === '$sw') {
+			search = `/^${scape(p.value)}/`;
+			op = 'regex';
+		} else if (p.operator === '$nsw') {
+			search = `/^${scape(p.value)}/`;
+			op = '$not_regex';
+		} else if (p.operator === '$ew') {
+			search = `/${scape(p.value)}$/`;
+			op = 'regex';
+		} else if (p.operator === '$new') {
+			search = `/${scape(p.value)}$/`;
+			op = '$not_regex';
+		} else {
 			throw new InvalidOperatorForTypeStringError(p.operator);
+		}
 
-		if (caseInsensitive)
-			p.value += 'i';
+		if (this.caseInsensitive)
+			search += 'i';
 
-		args[`${p.attr}__regex`] = p.value;
+		args[`${p.attr}__${op}`] = search;
 	}
 
 	__searchNumberAttr (p, args) {
+		let search;
 		let op;
 
-		if (p.operator === 'equals')
+		if (p.operator === '$eq') {
+			search = p.value;
 			op = '$eq';
-		else if (p.operator === 'greaterThan')
+		} else if (p.operator === '$neq') {
+			search = p.value;
+			op = '$ne';
+		} else if (p.operator === '$gt') {
+			search = p.value;
 			op = '$gt';
-		else if (p.operator === 'lessThan')
+		} else if (p.operator === '$lt') {
+			search = p.value;
 			op = '$lt';
-		else if (p.operator === 'greaterOrEqualThan')
+		} else if (p.operator === '$gte') {
+			search = p.value;
 			op = '$gte';
-		else if (p.operator === 'lessOrEqualThan')
+		} else if (p.operator === '$lte') {
+			search = p.value;
 			op = '$lte';
-		else
+		} else {
 			throw new InvalidOperatorForTypeNumberError(p.operator);
+		}
 
-		args[`${p.attr}__${op}`] = p.value;
+		args[`${p.attr}__${op}`] = search;
 	}
 
 	__searchDateAttr (p, args) {
+		let search;
 		let op;
 
-		if (p.operator === 'equals')
+		if (p.operator === '$eq') {
+			search = p.value.toISOString();
 			op = '$eq';
-		else if (p.operator === 'greaterThan')
+		} else if (p.operator === '$neq') {
+			search = p.value.toISOString();
+			op = '$ne';
+		} else if (p.operator === '$gt') {
+			search = p.value.toISOString();
 			op = '$gt';
-		else if (p.operator === 'lessThan')
+		} else if (p.operator === '$lt') {
+			search = p.value.toISOString();
 			op = '$lt';
-		else if (p.operator === 'greaterOrEqualThan')
+		} else if (p.operator === '$gte') {
+			search = p.value.toISOString();
 			op = '$gte';
-		else if (p.operator === 'lessOrEqualThan')
+		} else if (p.operator === '$lte') {
+			search = p.value.toISOString();
 			op = '$lte';
+		} else {
+			throw new InvalidOperatorForTypeDateError(p.operator);
+		}
 
-		args[`${p.attr}__${op}`] = p.value.toISOString();
+		args[`${p.attr}__${op}`] = search;
 	}
 
 	__searchBooleanAttr (p, args) {
-		if (p.value === true)
-			p.value = 1;
-		else if (p.value === false)
-			p.value = 0;
+		let search;
+		let op;
 
-		args[`${p.attr}__$eq`] = p.value;
+		if (p.value === true) {
+			search = 1;
+			op = '$eq';
+		} else if (p.value === false) {
+			search = 0;
+			op = '$eq';
+		} else {
+			throw new InvalidValueForTypeBooleanError(p.value);
+		}
+
+		args[`${p.attr}__${op}`] = search;
 	}
 }

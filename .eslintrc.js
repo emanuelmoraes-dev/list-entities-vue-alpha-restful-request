@@ -35,6 +35,8 @@ module.exports = {
 		'indent': ['error', 'tab'], // identação por tabulação
 		'no-tabs': 0, // com tabulação
 		'curly': 'off', // if de um comando pode não ter chaves
-		'no-mixed-operators': 'off' // desabilita bloqueio de uso de operações com '&&' e '||' misturados sem parêteses
+		'no-mixed-operators': 'off', // desabilita bloqueio de uso de operações com '&&' e '||' misturados sem parêteses
+		'no-unused-vars': 'off',
+		'no-useless-escape': 'off'
 	}
 };
