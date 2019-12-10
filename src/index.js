@@ -237,6 +237,11 @@ export default class Http {
 		let args = {};
 
 		for (let p of params) {
+			if (p.operator === '$' && p.descriptor.type === String)
+				p.operator = '$in';
+			else if (p.operator === '$')
+				p.operator = '$eq';
+
 			if (p.descriptor.array)
 				this.__searchArrayAttr(p, args);
 			else if (p.descriptor.type === String)

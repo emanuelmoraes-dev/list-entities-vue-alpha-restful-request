@@ -7,3 +7,5 @@ Simple package responsible for providing a class that assists in the implementat
 * Currently, the "searchDefault" function needs to be implemented externally by a class that inherits from this class provided here.
 
 * The "searchSepAnd" option from "list-entity-vue" has not been implemented for this package.
+
+* The "searchSepOr" option from "list-entity-vue" is available only for attributes that are array.

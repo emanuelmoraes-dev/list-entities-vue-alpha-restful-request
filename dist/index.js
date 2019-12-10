@@ -882,6 +882,7 @@ function () {
 
                 for (_iterator = params[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                   p = _step.value;
+                  if (p.operator === '$' && p.descriptor.type === String) p.operator = '$in';else if (p.operator === '$') p.operator = '$eq';
                   if (p.descriptor.array) this.__searchArrayAttr(p, args);else if (p.descriptor.type === String) this.__searchStringAttr(p, args);else if (p.descriptor.type === Number) this.__searchNumberAttr(p, args);else if (p.descriptor.type === Date) this.__searchDateAttr(p, args);else if (p.descriptor.type === Boolean) this.__searchBooleanAttr(p, args);
                 }
 
